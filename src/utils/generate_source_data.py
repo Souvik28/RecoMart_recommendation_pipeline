@@ -5,8 +5,25 @@ import os
 from datetime import datetime, timedelta
 
 def generate_transactions(n=1200):
+    # Debug: Show current working directory
+    current_dir = os.getcwd()
+    print(f"Current directory: {current_dir}")
+    
+    # Determine correct path based on current directory
+    if "src" in current_dir:
+        # Running from src/utils directory
+        source_dir = "../../source_data"
+        file_path = "../../source_data/transactions.csv"
+    else:
+        # Running from project root
+        source_dir = "source_data"
+        file_path = "source_data/transactions.csv"
+    
+    print(f"Creating directory: {os.path.abspath(source_dir)}")
+    print(f"Will save file to: {os.path.abspath(file_path)}")
+    
     # Ensure directory exists
-    os.makedirs("../../source_data", exist_ok=True)
+    os.makedirs(source_dir, exist_ok=True)
     
     # 1. Generate clean base data
     data = {
@@ -41,10 +58,9 @@ def generate_transactions(n=1200):
     df.loc[mismatch_indices, "amount"] = "ERROR_VAL"
 
     # Save to CSV
-    file_path = "../../source_data/transactions.csv"
     df.to_csv(file_path, index=False)
-    print(f"✅ Generated {len(df)} records in {file_path}")
-    print(f"📊 Summary: Includes missing values, duplicates, and range errors (ratings > 5).")
+    print(f"Generated {len(df)} records in {file_path}")
+    print(f"Summary: Includes missing values, duplicates, and range errors (ratings > 5).")
 
 if __name__ == "__main__":
-    generate_transactions(1200)
+    generate_transactions(50000)

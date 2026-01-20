@@ -1,8 +1,8 @@
 import time, json, random, uuid
 from datetime import datetime, timezone
 
-PRODUCTS = ["P101", "P102", "P103", "P104"]
-USERS = ["U001", "U002", "U003", "U004"]
+PRODUCTS = [f"P{i}" for i in range(101, 151)]
+USERS = [f"U{i:03d}" for i in range(1, 201)]
 
 def gen_clickstream_event():
     return {

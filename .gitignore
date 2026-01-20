@@ -8,9 +8,13 @@ recomart_env/
 
 # MLflow artifacts
 mlruns/
+mlflow.db
 
 # Data lake (generated data)
 recomart_lake/
+
+# Source data (generated)
+source_data/
 
 # IDE files
 .vscode/

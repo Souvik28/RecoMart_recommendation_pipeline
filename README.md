@@ -82,7 +82,7 @@ RecoMart_recommendation_pipeline/
 │   ├── 06_feature_engineering.py   # Step 6: Feature engineering
 │   ├── 07_feature_store.py         # Step 7: Feature store management
 │   ├── 08_data_lineage.py          # Step 8: Data lineage tracking
-│   ├── 09_train_model.py           # Step 9: Model training
+│   ├── 09_train_and_evaluate_model.py           # Step 9: Model training
 │   ├── 10_orchestrate_pipeline.py  # Pipeline orchestration
 │   ├── ingest_master.py            # Step 2: Data ingestion
 │   ├── speed_layer.py              # Step 2: Real-time processing
@@ -192,14 +192,14 @@ python 07_feature_store.py
 python 08_data_lineage.py
 ```
 
-### Step 9: Model Training (`09_train_model.py`)
+### Step 9: Model Training (`09_train_and_evaluate_model.py`)
 - Trains recommendation model using scikit-learn
 - Implements matrix factorization with TruncatedSVD
 - Tracks experiments with MLflow
 - Generates model performance visualizations
 
 ```bash
-python 09_train_model.py
+python 09_train_and_evaluate_model.py
 ```
 
 ### Step 10: Pipeline Orchestration (`10_orchestrate_pipeline.py`)
@@ -251,7 +251,7 @@ If you prefer to run steps individually:
    python 06_feature_engineering.py
    python 07_feature_store.py
    python 08_data_lineage.py
-   python 09_train_model.py
+   python 09_train_and_evaluate_model.py
    ```
 
 ---
@@ -265,7 +265,7 @@ After successful execution, you'll find:
 - **Reports**: Data quality PDF reports in `recomart_lake/reports/`
 - **Visualizations**: EDA plots in `recomart_lake/eda_plots/`
 - **Models**: Trained models and metadata in `recomart_lake/models/`
-- **MLflow Tracking**: Experiment tracking in `mlruns/` directory
+- **MLflow Tracking**: Experiment tracking in SQLite database (`mlflow.db`)
 
 ---
 
@@ -288,7 +288,7 @@ python check_speed_layer_data.py
 
 View MLflow UI:
 ```bash
-mlflow ui
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
 ---
