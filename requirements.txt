@@ -1,0 +1,32 @@
+# Core data processing
+pandas
+
+# HTTP requests for API calls
+requests
+
+# Data validation and schema enforcement
+pandera
+
+# PDF generation for reports
+fpdf2
+
+# Data visualization and plotting
+matplotlib
+seaborn
+
+# Machine learning and recommendation systems
+scikit-learn
+mlflow
+
+# Note: The following are part of Python standard library
+# but listed here for documentation purposes:
+# - sqlite3 (database operations)
+# - json (JSON data handling)
+# - logging (audit trail logging)
+# - datetime (timestamp operations)
+# - pathlib (file path operations)
+# - uuid (unique ID generation)
+# - time (delays and timing)
+# - random (data simulation)
+# - sys (system operations)
+# - os (operating system interface)
