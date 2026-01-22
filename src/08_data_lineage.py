@@ -36,9 +36,16 @@ def track_lineage(step_name, input_file, output_file, params=None):
     print(f"Lineage tracked for: {step_name}")
 
 if __name__ == "__main__":
-    # Example tracking for the transformation step
+    # Track lineage for combined data processing
+    prepared_data_path = "../recomart_lake/processed/prepared_transactions.csv"
+    
+    # Check if we're working with combined data
+    combined_path = "../recomart_lake/processed/combined_transactions.csv"
+    data_source = "combined_streaming_batch" if os.path.exists(combined_path) else "batch_only"
+    
     track_lineage(
         step_name="Feature_Engineering",
-        input_file="../recomart_lake/processed/prepared_transactions.csv",
-        output_file="../recomart_lake/feature_store/recomart_features.db"
+        input_file=prepared_data_path,
+        output_file="../recomart_lake/feature_store/recomart_features.db",
+        params={"data_source": data_source, "includes_streaming": os.path.exists(combined_path)}
     )

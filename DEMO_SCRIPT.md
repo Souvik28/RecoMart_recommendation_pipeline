@@ -83,14 +83,14 @@ python 10_orchestrate_pipeline.py
 2. **Batch Processing**: After 2 minutes of streaming data collection, batch steps execute:
    - **Step 2**: Data ingestion from CSV and API sources
    - **NEW: Streaming Data Merge**: Combines real-time events with batch data (Lambda Architecture)
-   - **Step 4**: Data validation with schema enforcement and PDF reporting
-   - **Step 5**: Data preparation and exploratory data analysis
-   - **Step 6**: Feature engineering and feature store management
-   - **Step 7**: Feature store management with SQLite database
-   - **Step 8**: Data lineage tracking for audit trails
+   - **Step 4**: Data validation with schema enforcement on **combined dataset**
+   - **Step 5**: Data preparation and EDA on **combined streaming + batch data**
+   - **Step 6**: Feature engineering using **combined data sources**
+   - **Step 7**: Feature store management with **combined data versioning**
+   - **Step 8**: Data lineage tracking with **streaming integration metadata**
    - **Step 9**: Model training with **combined streaming + batch data** and comprehensive evaluation plots
 
-Each step processes data and stores results in our partitioned data lake structure."
+Each step processes the same combined dataset, ensuring end-to-end consistency and true Lambda Architecture implementation."
 
 ---
 
@@ -119,13 +119,14 @@ mlflow ui
 **[Show key architectural decisions]**
 
 "Key architectural features:
-- **True Lambda Architecture**: Real-time streaming data automatically merged with batch processing
+- **True Lambda Architecture**: Real-time streaming data automatically merged and used throughout entire pipeline
 - **Data Lake**: Partitioned storage with proper organization
-- **Feature Store**: Centralized feature management with versioning
-- **Data Quality**: Automated validation and reporting
+- **Feature Store**: Centralized feature management with combined data versioning
+- **Data Quality**: Automated validation and reporting on combined datasets
 - **Experiment Tracking**: MLflow integration for model lifecycle
-- **Audit Trail**: Complete data lineage tracking
-- **Streaming Integration**: Click and add-to-cart events become implicit ratings for model training"
+- **Audit Trail**: Complete data lineage tracking with streaming integration metadata
+- **End-to-End Consistency**: All pipeline steps work on same combined dataset
+- **Streaming Integration**: Click and add-to-cart events become implicit ratings throughout pipeline"
 
 ---
 
@@ -160,18 +161,21 @@ Perfect foundation for scaling an e-commerce recommendation system with real-tim
 5. **Point out industry practices** - data validation, experiment tracking, audit trails
 
 ### Updated Pipeline Features:
-- **True Lambda Architecture**: Streaming data automatically merged with batch data for model training
+- **True Lambda Architecture**: Streaming data automatically merged and used throughout entire pipeline
+- **End-to-End Consistency**: All pipeline steps (validation, EDA, feature engineering, lineage, training) use same combined dataset
 - **Enhanced Model Training**: Now includes 7 comprehensive evaluation plots
 - **Improved Visualizations**: Hexbin plots, KDE distributions, error analysis, and performance dashboards
 - **Better Screen Fit**: All plots optimized for standard screen sizes
 - **Expanded User/Product Range**: 200 users (U001-U200) and 50 products (P101-P150)
 - **Comprehensive Evaluation**: Precision@K, Recall@K, residual analysis, and rating distribution comparisons
-- **Streaming Integration**: Real-time events (clicks, add-to-cart) converted to implicit ratings
+- **Complete Streaming Integration**: Real-time events (view=2, click=3, add_to_cart=4) converted to implicit ratings and used throughout pipeline
+- **Advanced Lineage Tracking**: Metadata tracks whether streaming data was included in each processing step
+- **Versioned Feature Store**: Features tagged with combined data version for proper tracking
 
 ### Technical Notes:
 - Pipeline takes ~3-4 minutes to complete
 - Speed Layer generates ~80-100 events in 2 minutes
-- Streaming events are automatically converted to implicit ratings (click=3, add_to_cart=4)
+- Streaming events are automatically converted to implicit ratings (view=2, click=3, add_to_cart=4)
 - All outputs are automatically organized in recomart_lake/
 - MLflow UI can be shown at the end if time permits
 - Model training uses combined streaming + batch data when available

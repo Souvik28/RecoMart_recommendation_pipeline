@@ -9,13 +9,22 @@ import os
 os.makedirs("../recomart_lake/eda_plots", exist_ok=True)
 
 def prepare_data():
-    # 1. Load latest data
-    csv_files = glob.glob("../recomart_lake/raw/internal/transactions/*/*.csv")
-    if not csv_files:
-        print("No CSV files found. Please run ingest_master.py first.")
-        return
-    latest_file = max(csv_files, key=os.path.getctime)
-    df = pd.read_csv(latest_file)
+    # 1. Load latest data - prioritize combined data if available
+    combined_path = "../recomart_lake/processed/combined_transactions.csv"
+    
+    if os.path.exists(combined_path):
+        print("Using combined streaming + batch data for preparation")
+        df = pd.read_csv(combined_path)
+    else:
+        print("Using batch data only for preparation")
+        csv_files = glob.glob("../recomart_lake/raw/internal/transactions/*/*.csv")
+        if not csv_files:
+            print("No CSV files found. Please run ingest_master.py first.")
+            return
+        latest_file = max(csv_files, key=os.path.getctime)
+        df = pd.read_csv(latest_file)
+    
+    print(f"Processing {len(df)} total interactions")
 
     # 2. Cleaning
     # Handle Schema Mismatch: Convert amount to numeric, forcing errors (like 'ERROR_VAL') to NaN

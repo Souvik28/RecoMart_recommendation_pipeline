@@ -228,11 +228,12 @@ This will:
 2. Execute all batch processing steps in sequence:
    - Data ingestion from CSV and API sources
    - **Merge streaming data with batch data** (Lambda Architecture integration)
-   - Data validation and quality reporting
-   - Data preparation and EDA
-   - Feature engineering and feature store management
-   - Data lineage tracking
-   - Model training with combined streaming + batch data
+   - **Data validation on combined dataset** (streaming + batch)
+   - **Data preparation and EDA on combined dataset**
+   - **Feature engineering using combined data sources**
+   - **Feature store with combined data versioning**
+   - **Data lineage tracking with streaming integration metadata**
+   - **Model training with combined streaming + batch data**
 3. Handle errors and provide detailed logging
 4. Clean up processes upon completion
 
@@ -306,11 +307,11 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 
 - **Lambda Architecture**: Combines batch and real-time processing with automatic data merging
 - **Data Lake**: Partitioned storage by source, type, and timestamp
-- **Feature Store**: Centralized feature management with versioning
+- **Feature Store**: Centralized feature management with combined data versioning
 - **MLflow Integration**: Comprehensive experiment tracking
-- **Data Quality**: Automated validation and reporting
-- **Lineage Tracking**: Full data transformation audit trail
-- **Streaming Integration**: Real-time events automatically merged with batch data for model training
+- **Data Quality**: Automated validation and reporting on combined datasets
+- **Lineage Tracking**: Full data transformation audit trail with streaming integration metadata
+- **End-to-End Streaming Integration**: All pipeline steps consistently use combined streaming + batch data
 
 ---
 

@@ -79,9 +79,17 @@ def validate_and_profile(file_path):
     generate_pdf_report(metrics, failure_cases, os.path.basename(file_path))
 
 if __name__ == "__main__":
-    csv_files = glob.glob(LAKE_PATH)
-    if csv_files:
-        latest_file = max(csv_files, key=os.path.getctime)
-        validate_and_profile(latest_file)
+    # Check for combined data first, then fall back to batch data
+    combined_path = "../recomart_lake/processed/combined_transactions.csv"
+    
+    if os.path.exists(combined_path):
+        print("Validating combined streaming + batch data")
+        validate_and_profile(combined_path)
     else:
-        print("No files found to validate.")
+        print("Validating batch data only")
+        csv_files = glob.glob(LAKE_PATH)
+        if csv_files:
+            latest_file = max(csv_files, key=os.path.getctime)
+            validate_and_profile(latest_file)
+        else:
+            print("No files found to validate.")

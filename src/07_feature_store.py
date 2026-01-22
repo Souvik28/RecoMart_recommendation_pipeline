@@ -12,8 +12,8 @@ def update_feature_store(user_df, item_df):
     # Add metadata columns for versioning
     user_df['updated_at'] = datetime.now().isoformat()
     item_df['updated_at'] = datetime.now().isoformat()
-    user_df['version'] = 'v1.0'
-    item_df['version'] = 'v1.0'
+    user_df['version'] = 'v1.0_combined'  # Indicate combined data
+    item_df['version'] = 'v1.0_combined'
 
     # Store in SQLite
     user_df.to_sql("user_features", conn, if_exists="replace", index=False)

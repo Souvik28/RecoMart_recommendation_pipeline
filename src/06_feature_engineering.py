@@ -2,7 +2,9 @@ import pandas as pd
 import sqlite3
 
 def engineering():
+    # Use prepared data (which is now combined streaming + batch)
     df = pd.read_csv("../recomart_lake/processed/prepared_transactions.csv")
+    print(f"Feature engineering on {len(df)} transactions (combined streaming + batch data)")
 
     # Feature 1: User Activity Frequency (How many times has a user interacted?)
     user_features = df.groupby('user_id').agg(
