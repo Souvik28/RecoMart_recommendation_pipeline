@@ -26,6 +26,7 @@
 
 **[Show key files]**
 - "Step 2 handles real-time streaming with stream_simulator.py and speed_layer.py"
+- "merge_streaming_data.py implements true Lambda Architecture by combining streaming + batch data"
 - "Steps 4-9 are our main batch processing pipeline"
 - "Step 10 orchestrates everything together"
 
@@ -81,12 +82,13 @@ python 10_orchestrate_pipeline.py
 
 2. **Batch Processing**: After 2 minutes of streaming data collection, batch steps execute:
    - **Step 2**: Data ingestion from CSV and API sources
+   - **NEW: Streaming Data Merge**: Combines real-time events with batch data (Lambda Architecture)
    - **Step 4**: Data validation with schema enforcement and PDF reporting
    - **Step 5**: Data preparation and exploratory data analysis
    - **Step 6**: Feature engineering and feature store management
    - **Step 7**: Feature store management with SQLite database
    - **Step 8**: Data lineage tracking for audit trails
-   - **Step 9**: Model training and evaluation with comprehensive plots
+   - **Step 9**: Model training with **combined streaming + batch data** and comprehensive evaluation plots
 
 Each step processes data and stores results in our partitioned data lake structure."
 
@@ -117,12 +119,13 @@ mlflow ui
 **[Show key architectural decisions]**
 
 "Key architectural features:
-- **Lambda Architecture**: Combines real-time and batch processing
+- **True Lambda Architecture**: Real-time streaming data automatically merged with batch processing
 - **Data Lake**: Partitioned storage with proper organization
 - **Feature Store**: Centralized feature management with versioning
 - **Data Quality**: Automated validation and reporting
 - **Experiment Tracking**: MLflow integration for model lifecycle
-- **Audit Trail**: Complete data lineage tracking"
+- **Audit Trail**: Complete data lineage tracking
+- **Streaming Integration**: Click and add-to-cart events become implicit ratings for model training"
 
 ---
 
@@ -130,14 +133,14 @@ mlflow ui
 **[Show final project structure]**
 
 "This demonstrates a production-ready data pipeline that handles:
-- Real-time streaming data
-- Batch data processing
-- Data quality validation
-- Feature engineering
-- Model training and tracking
+- Real-time streaming data with automatic integration
+- Batch data processing with quality validation
+- Lambda Architecture implementation
+- Feature engineering with combined data sources
+- Model training using both streaming and batch signals
 - Comprehensive logging and monitoring
 
-Perfect foundation for scaling an e-commerce recommendation system!"
+Perfect foundation for scaling an e-commerce recommendation system with real-time capabilities!"
 
 ---
 
@@ -152,20 +155,26 @@ Perfect foundation for scaling an e-commerce recommendation system!"
 ### During Recording:
 1. **Speak clearly** and at moderate pace
 2. **Show, don't just tell** - navigate through actual files and outputs
-3. **Highlight key concepts** - Lambda Architecture, data lake, feature store
+3. **Highlight key concepts** - Lambda Architecture, streaming integration, data lake, feature store
 4. **Keep terminal visible** - let viewers see the pipeline execution logs
 5. **Point out industry practices** - data validation, experiment tracking, audit trails
 
 ### Updated Pipeline Features:
+- **True Lambda Architecture**: Streaming data automatically merged with batch data for model training
 - **Enhanced Model Training**: Now includes 7 comprehensive evaluation plots
 - **Improved Visualizations**: Hexbin plots, KDE distributions, error analysis, and performance dashboards
 - **Better Screen Fit**: All plots optimized for standard screen sizes
 - **Expanded User/Product Range**: 200 users (U001-U200) and 50 products (P101-P150)
 - **Comprehensive Evaluation**: Precision@K, Recall@K, residual analysis, and rating distribution comparisons
+- **Streaming Integration**: Real-time events (clicks, add-to-cart) converted to implicit ratings
+
+### Technical Notes:
 - Pipeline takes ~3-4 minutes to complete
-- Speed Layer generates ~200-300 events in 2 minutes
+- Speed Layer generates ~80-100 events in 2 minutes
+- Streaming events are automatically converted to implicit ratings (click=3, add_to_cart=4)
 - All outputs are automatically organized in recomart_lake/
 - MLflow UI can be shown at the end if time permits
+- Model training uses combined streaming + batch data when available
 
 ### Backup Plan:
 If pipeline fails during recording, you can show pre-generated results and explain the architecture using the folder structure and code files.

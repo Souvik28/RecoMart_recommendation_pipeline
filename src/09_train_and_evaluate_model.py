@@ -47,6 +47,15 @@ def train_sklearn_recommender():
     os.makedirs(model_dir, exist_ok=True)
     
     data_path = "../recomart_lake/processed/prepared_transactions.csv"
+    
+    # Check for combined streaming + batch data first
+    combined_path = "../recomart_lake/processed/combined_transactions.csv"
+    if os.path.exists(combined_path):
+        data_path = combined_path
+        print("Using combined streaming + batch data for training")
+    else:
+        print("Using batch data only for training")
+        
     if not os.path.exists(data_path):
         print(f"Error: Prepared data not found at {data_path}. Run Step 5 first.")
         return

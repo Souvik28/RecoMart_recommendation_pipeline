@@ -61,14 +61,15 @@ def main():
     cmd = f"{python_exe} stream_simulator.py | {python_exe} speed_layer.py"
     stream_process = subprocess.Popen(cmd, shell=True, cwd=os.path.dirname(os.path.abspath(__file__)), preexec_fn=os.setsid if os.name != 'nt' else None)
     
-    # Let the Speed Layer run for 4 minutes to generate more streaming data
+    # Let the Speed Layer run for 2 minutes to generate more streaming data
     logging.info("Waiting 2 minutes for Speed Layer to generate streaming data...")
-    time.sleep(240)  # 4 minutes = 240 seconds
+    time.sleep(240)  # 2 minutes = 120 seconds
 
     # --- STEP 2: Execute the Batch Pipeline Sequence ---
     # These are the tasks that run once and finish
     batch_steps = [
         ("ingest_master.py", "Data Ingestion (Batch & API)"),
+        ("merge_streaming_data.py", "Merge Streaming Data with Batch Data"),
         ("04_validate_data.py", "Data Validation & DQ Reporting"),
         ("05_prepare_and_eda.py", "Data Preparation & EDA"),
         ("06_feature_engineering.py", "Feature Engineering"),

@@ -85,6 +85,7 @@ RecoMart_recommendation_pipeline/
 │   ├── 09_train_and_evaluate_model.py           # Step 9: Model training
 │   ├── 10_orchestrate_pipeline.py  # Pipeline orchestration
 │   ├── ingest_master.py            # Step 2: Data ingestion
+│   ├── merge_streaming_data.py     # Lambda Architecture: Merge streaming + batch data
 │   ├── speed_layer.py              # Step 2: Real-time processing
 │   └── stream_simulator.py         # Step 2: Stream simulation
 ├── recomart_lake/                  # Data lake (auto-generated)
@@ -224,7 +225,14 @@ python 10_orchestrate_pipeline.py
 
 This will:
 1. Start the Speed Layer (runs for 2 minutes to generate streaming data)
-2. Execute all batch processing steps in sequence
+2. Execute all batch processing steps in sequence:
+   - Data ingestion from CSV and API sources
+   - **Merge streaming data with batch data** (Lambda Architecture integration)
+   - Data validation and quality reporting
+   - Data preparation and EDA
+   - Feature engineering and feature store management
+   - Data lineage tracking
+   - Model training with combined streaming + batch data
 3. Handle errors and provide detailed logging
 4. Clean up processes upon completion
 
@@ -246,6 +254,7 @@ If you prefer to run steps individually:
 3. **Run batch steps in order:**
    ```bash
    python ingest_master.py
+   python merge_streaming_data.py
    python 04_validate_data.py
    python 05_prepare_and_eda.py
    python 06_feature_engineering.py
@@ -295,12 +304,13 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 
 ## Architecture Notes
 
-- **Lambda Architecture**: Combines batch and real-time processing
+- **Lambda Architecture**: Combines batch and real-time processing with automatic data merging
 - **Data Lake**: Partitioned storage by source, type, and timestamp
 - **Feature Store**: Centralized feature management with versioning
 - **MLflow Integration**: Comprehensive experiment tracking
 - **Data Quality**: Automated validation and reporting
 - **Lineage Tracking**: Full data transformation audit trail
+- **Streaming Integration**: Real-time events automatically merged with batch data for model training
 
 ---
 
