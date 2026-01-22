@@ -61,6 +61,7 @@ def merge_streaming_with_batch():
     
     # 6. Save combined dataset
     output_path = "../recomart_lake/processed/combined_transactions.csv"
+    os.makedirs("../recomart_lake/processed", exist_ok=True)
     combined_df.to_csv(output_path, index=False)
     print(f"Saved combined dataset to: {output_path}")
     
