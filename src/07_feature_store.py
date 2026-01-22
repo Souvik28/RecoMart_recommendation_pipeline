@@ -6,7 +6,7 @@ from datetime import datetime
 DB_PATH = "../recomart_lake/feature_store/recomart_features.db"
 os.makedirs("../recomart_lake/feature_store", exist_ok=True)
 
-def update_feature_store(user_df, item_df):
+def update_feature_store(user_df, item_df, interaction_df=None):
     conn = sqlite3.connect(DB_PATH)
     
     # Add metadata columns for versioning
@@ -18,6 +18,13 @@ def update_feature_store(user_df, item_df):
     # Store in SQLite
     user_df.to_sql("user_features", conn, if_exists="replace", index=False)
     item_df.to_sql("item_features", conn, if_exists="replace", index=False)
+    
+    # Store interaction features if provided
+    if interaction_df is not None:
+        interaction_df['updated_at'] = datetime.now().isoformat()
+        interaction_df['version'] = 'v1.0_combined'
+        interaction_df.to_sql("interaction_features", conn, if_exists="replace", index=False)
+        print(f"✅ Feature Store Updated with interaction features: {DB_PATH}")
     
     conn.close()
     print(f"✅ Feature Store Updated: {DB_PATH}")
@@ -39,8 +46,8 @@ if __name__ == "__main__":
         feature_eng = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(feature_eng)
         
-        u, i = feature_eng.engineering()
-        update_feature_store(u, i)
+        u, i, int_feat = feature_eng.engineering()
+        update_feature_store(u, i, int_feat)
         
         # Sample Retrieval Demonstration
         print("\n--- Feature Retrieval Demo ---")

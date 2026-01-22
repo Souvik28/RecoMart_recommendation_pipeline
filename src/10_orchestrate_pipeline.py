@@ -63,7 +63,7 @@ def main():
     
     # Let the Speed Layer run for 2 minutes to generate more streaming data
     logging.info("Waiting 2 minutes for Speed Layer to generate streaming data...")
-    time.sleep(240)  # 2 minutes = 120 seconds
+    time.sleep(120)  # 2 minutes = 120 seconds
 
     # --- STEP 2: Execute the Batch Pipeline Sequence ---
     # These are the tasks that run once and finish
