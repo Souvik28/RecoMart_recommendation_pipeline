@@ -31,13 +31,13 @@ def generate_transactions(n=1200):
     
     df = pd.DataFrame(data)
 
-    # 2. Inject 2% Missing Values (~24 rows)
+    # 2. Inject 0.5% Missing Values 
     for col in ["amount", "user_id"]:
-        null_indices = random.sample(range(n), int(n * 0.01))
+        null_indices = random.sample(range(n), int(n * 0.005))
         df.loc[null_indices, col] = np.nan
 
-    # 3. Inject 2% Duplicate Entries (~24 rows)
-    dup_indices = random.sample(range(n), int(n * 0.02))
+    # 3. Inject 1% Duplicate Entries (~24 rows)
+    dup_indices = random.sample(range(n), int(n * 0.01))
     df = pd.concat([df, df.iloc[dup_indices]], ignore_index=True)
 
     # 4. Inject Range & Format Checks (Invalid Ratings)
