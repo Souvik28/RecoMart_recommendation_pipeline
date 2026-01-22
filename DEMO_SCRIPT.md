@@ -83,9 +83,10 @@ python 10_orchestrate_pipeline.py
    - **Step 2**: Data ingestion from CSV and API sources
    - **Step 4**: Data validation with schema enforcement and PDF reporting
    - **Step 5**: Data preparation and exploratory data analysis
-   - **Step 7**: Feature engineering and feature store management
+   - **Step 6**: Feature engineering and feature store management
+   - **Step 7**: Feature store management with SQLite database
    - **Step 8**: Data lineage tracking for audit trails
-   - **Step 9**: Model training with MLflow experiment tracking
+   - **Step 9**: Model training and evaluation with comprehensive plots
 
 Each step processes data and stores results in our partitioned data lake structure."
 
@@ -102,13 +103,13 @@ Each step processes data and stores results in our partitioned data lake structu
 - **Reports**: PDF data quality reports with validation results
 - **EDA Plots**: Visualizations showing data distributions
 - **Feature Store**: SQLite database with versioned features
-- **Models**: Trained recommendation model with metadata
+- **Models**: Trained SVD recommendation model with performance plots and metadata
 
 **[Open MLflow UI if time permits]**
 ```bash
 mlflow ui
 ```
-"MLflow tracks our experiments with metrics, parameters, and model artifacts."
+"MLflow tracks our experiments with metrics like RMSE, Precision@5, and model artifacts including performance visualizations."
 
 ---
 
@@ -155,9 +156,14 @@ Perfect foundation for scaling an e-commerce recommendation system!"
 4. **Keep terminal visible** - let viewers see the pipeline execution logs
 5. **Point out industry practices** - data validation, experiment tracking, audit trails
 
-### Technical Notes:
+### Updated Pipeline Features:
+- **Enhanced Model Training**: Now includes 7 comprehensive evaluation plots
+- **Improved Visualizations**: Hexbin plots, KDE distributions, error analysis, and performance dashboards
+- **Better Screen Fit**: All plots optimized for standard screen sizes
+- **Expanded User/Product Range**: 200 users (U001-U200) and 50 products (P101-P150)
+- **Comprehensive Evaluation**: Precision@K, Recall@K, residual analysis, and rating distribution comparisons
 - Pipeline takes ~3-4 minutes to complete
-- Speed Layer generates ~80-100 events in 2 minutes
+- Speed Layer generates ~200-300 events in 2 minutes
 - All outputs are automatically organized in recomart_lake/
 - MLflow UI can be shown at the end if time permits
 
