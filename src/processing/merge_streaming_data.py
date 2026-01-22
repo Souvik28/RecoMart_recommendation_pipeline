@@ -10,7 +10,7 @@ def merge_streaming_with_batch():
     """
     
     # 1. Load batch data from raw ingestion
-    batch_files = glob.glob("../recomart_lake/raw/internal/transactions/*/*.csv")
+    batch_files = glob.glob("../../recomart_lake/raw/internal/transactions/*/*.csv")
     if not batch_files:
         print("Error: No batch data found. Run ingest_master.py first.")
         return None
@@ -20,7 +20,7 @@ def merge_streaming_with_batch():
     print(f"Loaded {len(batch_df)} batch transactions from raw data")
     
     # 2. Load streaming data
-    stream_db_path = "../recomart_lake/speed_layer/real_time_events.db"
+    stream_db_path = "../../recomart_lake/speed_layer/real_time_events.db"
     if not os.path.exists(stream_db_path):
         print("Warning: No streaming data found. Using batch data only.")
         return batch_df
@@ -60,8 +60,8 @@ def merge_streaming_with_batch():
     print(f"Total combined dataset: {len(combined_df)} interactions")
     
     # 6. Save combined dataset
-    output_path = "../recomart_lake/processed/combined_transactions.csv"
-    os.makedirs("../recomart_lake/processed", exist_ok=True)
+    output_path = "../../recomart_lake/processed/combined_transactions.csv"
+    os.makedirs("../../recomart_lake/processed", exist_ok=True)
     combined_df.to_csv(output_path, index=False)
     print(f"Saved combined dataset to: {output_path}")
     

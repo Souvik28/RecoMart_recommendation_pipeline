@@ -10,25 +10,27 @@
 
 **[Open README.md briefly]**
 
-"The pipeline follows industry best practices with data validation, feature engineering, model training, and comprehensive logging."
+"The pipeline follows industry best practices with data validation, feature engineering, model training, and comprehensive logging. It achieves realistic metrics: RMSE ~0.52 and Precision@5 ~0.11."
 
 ---
 
 ## Project Structure Overview (45 seconds)
 **[Navigate through folder structure]**
 
-"Let me show you the project organization:
-- **src/** contains all our Python pipeline steps
-- **src/utils/** has utility scripts for data generation
-- **recomart_lake/** will store all our processed data using a data lake pattern
-- **requirements.txt** lists all dependencies
-- **Virtual environment** keeps everything isolated"
+"Let me show you the organized project structure:
+- **src/ingestion/** handles data ingestion and real-time streaming
+- **src/processing/** contains data validation, preparation, and feature engineering
+- **src/modeling/** includes BiasedSVD training and hybrid recommendations
+- **src/orchestration/** orchestrates the complete pipeline
+- **src/utils/** has utility scripts for data generation and inspection
+- **recomart_lake/** stores all processed data using a data lake pattern
+- **mlflow.db** tracks experiments and model performance"
 
 **[Show key files]**
-- "Step 2 handles real-time streaming with stream_simulator.py and speed_layer.py"
-- "merge_streaming_data.py implements true Lambda Architecture by combining streaming + batch data"
-- "Steps 4-9 are our main batch processing pipeline"
-- "Step 10 orchestrates everything together"
+- "stream_simulator.py and speed_layer.py handle real-time streaming"
+- "merge_streaming_data.py implements true Lambda Architecture"
+- "09_train_and_evaluate_model.py includes proper train/test split and comprehensive evaluation"
+- "10_orchestrate_pipeline.py orchestrates everything with error handling"
 
 ---
 
@@ -43,7 +45,7 @@ pip install -r requirements.txt
 ```
 
 **[Show requirements.txt briefly]**
-"We're using pandas for data processing, MLflow for experiment tracking, pandera for data validation, and scikit-learn for machine learning."
+"We're using pandas for data processing, MLflow for experiment tracking, pandera for data validation, surprise for recommendations, and matplotlib for visualizations."
 
 ---
 
@@ -63,12 +65,12 @@ python generate_source_data.py
 ---
 
 ## Pipeline Execution (90 seconds)
-**[Navigate to src directory]**
+**[Navigate to src/orchestration directory]**
 
 "Now for the main event - let's run our complete Lambda Architecture pipeline:"
 
 ```bash
-cd ../
+cd ../orchestration
 python 10_orchestrate_pipeline.py
 ```
 
@@ -76,21 +78,23 @@ python 10_orchestrate_pipeline.py
 
 "Watch the orchestration in action:
 
-1. **Speed Layer Launch**: The pipeline starts real-time stream simulation and processing
+1. **Speed Layer Launch**: The pipeline starts real-time stream simulation
    - stream_simulator.py generates clickstream events every 1.5 seconds
    - speed_layer.py processes these events into SQLite database
+   - Runs for 1 minute to generate streaming data
 
-2. **Batch Processing**: After 2 minutes of streaming data collection, batch steps execute:
-   - **Step 2**: Data ingestion from CSV and API sources
-   - **NEW: Streaming Data Merge**: Combines real-time events with batch data (Lambda Architecture)
-   - **Step 4**: Data validation with schema enforcement on **combined dataset**
-   - **Step 5**: Data preparation and EDA on **combined streaming + batch data**
-   - **Step 6**: Feature engineering using **combined data sources**
-   - **Step 7**: Feature store management with **combined data versioning**
-   - **Step 8**: Data lineage tracking with **streaming integration metadata**
-   - **Step 9**: Model training with **combined streaming + batch data** and comprehensive evaluation plots
+2. **Batch Processing**: Sequential execution of all pipeline stages:
+   - **Data Ingestion**: CSV and API data ingestion
+   - **Lambda Architecture**: Combines real-time events with batch data
+   - **Data Validation**: Schema enforcement with PDF quality reports
+   - **Data Preparation**: EDA with click aggregation (70% rating + 30% interaction)
+   - **Feature Engineering**: User/item features with content metadata
+   - **Feature Store**: SQLite database with versioned features
+   - **Data Lineage**: Complete transformation tracking
+   - **Model Training**: BiasedSVD with proper train/test split and hyperparameter tuning
+   - **Recommendations**: Hybrid collaborative filtering + content-based with cold start handling
 
-Each step processes the same combined dataset, ensuring end-to-end consistency and true Lambda Architecture implementation."
+Each step processes combined streaming + batch data for true Lambda Architecture."
 
 ---
 
@@ -101,17 +105,41 @@ Each step processes the same combined dataset, ensuring end-to-end consistency a
 
 **[Navigate to recomart_lake]**
 - **Data Lake Structure**: Organized by source, type, and date partitions
-- **Logs**: Comprehensive audit trails for every operation
+- **Logs**: Comprehensive audit trails in logs/orchestration/
 - **Reports**: PDF data quality reports with validation results
-- **EDA Plots**: Visualizations showing data distributions
-- **Feature Store**: SQLite database with versioned features
-- **Models**: Trained SVD recommendation model with performance plots and metadata
+- **EDA Plots**: Rating distributions, user patterns, interaction analysis
+- **Feature Store**: SQLite database with user/item features
+- **Models**: BiasedSVD model with comprehensive evaluation plots
 
-**[Open MLflow UI if time permits]**
+**[Show MLflow UI]**
 ```bash
 mlflow ui
 ```
-"MLflow tracks our experiments with metrics like RMSE, Precision@5, and model artifacts including performance visualizations."
+"MLflow tracks experiments with realistic metrics:
+- RMSE: ~0.52 (excellent prediction accuracy)
+- Precision@5: ~0.11 (realistic for sparse data)
+- Multiple K values (1, 3, 5, 10) for comprehensive evaluation
+- Artifacts include 7 evaluation plots: variance, quality metrics, prediction scatter, rating distributions, error analysis, matrix heatmap, and performance summary"
+
+---
+
+## Model Performance Demo (45 seconds)
+**[Show model training output or MLflow results]**
+
+"Key model achievements:
+- **No Data Leakage**: Proper train/test split with holdout evaluation
+- **Sparsity Analysis**: Matrix density checks for meaningful Precision@K
+- **Hyperparameter Tuning**: Sparsity-aware parameter optimization
+- **Hybrid Approach**: 70% collaborative filtering + 30% content-based
+- **Cold Start Handling**: Content-based recommendations for new users
+- **Comprehensive Evaluation**: Multiple thresholds (3.5, 4.5) and K values
+
+**[Show recommendation generation]**
+```bash
+cd src/modeling
+python generate_recommendations.py
+```
+"Generates recommendations for existing users (hybrid scores 3-5) and new users (content-based scores 0.5-0.9)."
 
 ---
 
@@ -119,66 +147,64 @@ mlflow ui
 **[Show key architectural decisions]**
 
 "Key architectural features:
-- **True Lambda Architecture**: Real-time streaming data automatically merged and used throughout entire pipeline
-- **Data Lake**: Partitioned storage with proper organization
-- **Feature Store**: Centralized feature management with combined data versioning
-- **Data Quality**: Automated validation and reporting on combined datasets
-- **Experiment Tracking**: MLflow integration for model lifecycle
-- **Audit Trail**: Complete data lineage tracking with streaming integration metadata
-- **End-to-End Consistency**: All pipeline steps work on same combined dataset
-- **Streaming Integration**: Click and add-to-cart events become implicit ratings throughout pipeline"
+- **Lambda Architecture**: Real-time streaming automatically merged throughout pipeline
+- **Organized Structure**: Semantic folders (ingestion/, processing/, modeling/, orchestration/)
+- **Data Quality**: Automated validation with sparsity checks
+- **Feature Store**: Centralized management with content metadata integration
+- **Experiment Tracking**: MLflow with comprehensive model versioning
+- **Proper Evaluation**: Train/test split prevents overfitting (no more Precision=1.0)
+- **Cold Start Solution**: Product metadata API for new user recommendations
+- **Error Handling**: Unicode-safe logging and comprehensive error management"
 
 ---
 
 ## Conclusion (15 seconds)
 **[Show final project structure]**
 
-"This demonstrates a production-ready data pipeline that handles:
-- Real-time streaming data with automatic integration
-- Batch data processing with quality validation
-- Lambda Architecture implementation
-- Feature engineering with combined data sources
-- Model training using both streaming and batch signals
-- Comprehensive logging and monitoring
+"This demonstrates a production-ready recommendation pipeline with:
+- Realistic evaluation metrics (RMSE 0.52, Precision@5 0.11)
+- Proper train/test methodology preventing data leakage
+- Hybrid recommendations solving cold start problems
+- Complete Lambda Architecture with streaming integration
+- MLflow experiment tracking with comprehensive artifacts
+- Industry-standard data quality and lineage tracking
 
-Perfect foundation for scaling an e-commerce recommendation system with real-time capabilities!"
+Perfect foundation for scaling an e-commerce recommendation system!"
 
 ---
 
 ## Demo Tips:
 
 ### Before Recording:
-1. **Clean environment**: Delete any existing recomart_lake/ and mlruns/ folders
-2. **Test run**: Execute the pipeline once to ensure everything works
-3. **Prepare windows**: Have terminal, file explorer, and code editor ready
-4. **Check timing**: Practice to stay within 3-5 minutes
+1. **Clean environment**: Delete existing recomart_lake/ and mlflow.db
+2. **Test run**: Execute pipeline once to ensure everything works
+3. **Check MLflow**: Verify experiments show realistic metrics (not 1.0 precision)
+4. **Prepare windows**: Terminal, file explorer, MLflow UI ready
 
 ### During Recording:
-1. **Speak clearly** and at moderate pace
-2. **Show, don't just tell** - navigate through actual files and outputs
-3. **Highlight key concepts** - Lambda Architecture, streaming integration, data lake, feature store
-4. **Keep terminal visible** - let viewers see the pipeline execution logs
-5. **Point out industry practices** - data validation, experiment tracking, audit trails
+1. **Highlight realistic metrics**: Emphasize RMSE ~0.52, Precision@5 ~0.11
+2. **Show train/test split**: Point out "Model trained ONLY on training matrix"
+3. **Demonstrate cold start**: Show non-zero scores for new users
+4. **Navigate organized structure**: Show semantic folder organization
+5. **MLflow integration**: Display experiments, artifacts, and evaluation plots
 
-### Updated Pipeline Features:
-- **True Lambda Architecture**: Streaming data automatically merged and used throughout entire pipeline
-- **End-to-End Consistency**: All pipeline steps (validation, EDA, feature engineering, lineage, training) use same combined dataset
-- **Enhanced Model Training**: Now includes 7 comprehensive evaluation plots
-- **Improved Visualizations**: Hexbin plots, KDE distributions, error analysis, and performance dashboards
-- **Better Screen Fit**: All plots optimized for standard screen sizes
-- **Expanded User/Product Range**: 200 users (U001-U200) and 50 products (P101-P150)
-- **Comprehensive Evaluation**: Precision@K, Recall@K, residual analysis, and rating distribution comparisons
-- **Complete Streaming Integration**: Real-time events (view=2, click=3, add_to_cart=4) converted to implicit ratings and used throughout pipeline
-- **Advanced Lineage Tracking**: Metadata tracks whether streaming data was included in each processing step
-- **Versioned Feature Store**: Features tagged with combined data version for proper tracking
+### Key Technical Points:
+- **No Data Leakage**: Proper holdout evaluation with realistic metrics
+- **Sparsity Analysis**: Matrix density checks for meaningful evaluation
+- **Hybrid Recommendations**: CF + content-based with cold start handling
+- **Lambda Architecture**: Streaming data integrated throughout pipeline
+- **Comprehensive Evaluation**: 7 evaluation plots with multiple metrics
+- **Error Handling**: Unicode-safe, Windows-compatible logging
 
-### Technical Notes:
-- Pipeline takes ~3-4 minutes to complete
-- Speed Layer generates ~80-100 events in 2 minutes
-- Streaming events are automatically converted to implicit ratings (view=2, click=3, add_to_cart=4)
-- All outputs are automatically organized in recomart_lake/
-- MLflow UI can be shown at the end if time permits
-- Model training uses combined streaming + batch data when available
+### Expected Outputs:
+- **Pipeline Runtime**: 3-5 minutes total
+- **RMSE**: 0.4-0.6 range (excellent performance)
+- **Precision@5**: 0.08-0.15 range (realistic for sparse data)
+- **Cold Start Scores**: 0.5-0.9 (content-based recommendations)
+- **MLflow Experiments**: Multiple runs with comprehensive artifacts
 
-### Backup Plan:
-If pipeline fails during recording, you can show pre-generated results and explain the architecture using the folder structure and code files.
+### Troubleshooting:
+- If Precision=1.0: Check for "Data Leakage Check" output
+- If Cold Start=0.0: Verify content features loaded
+- If Unicode errors: Ensure terminal encoding set properly
+- If MLflow UI empty: Run from project root directory

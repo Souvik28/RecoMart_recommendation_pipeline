@@ -3,7 +3,8 @@ import sys, json, sqlite3, os
 # Set environment variable for UTF-8 encoding
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 
-DB_PATH = "../recomart_lake/speed_layer/real_time_events.db"
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DB_PATH = os.path.join(project_root, "recomart_lake", "speed_layer", "real_time_events.db")
 
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)

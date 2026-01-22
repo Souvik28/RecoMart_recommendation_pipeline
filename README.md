@@ -5,6 +5,14 @@ This project implements a complete data management pipeline for **RecoMart**, an
 
 The architecture follows a **Lambda Architecture** pattern, splitting data processing into a **Batch Layer** for master datasets and a **Speed Layer** for near-real-time event processing.
 
+## Key Features
+- **Hybrid Recommendation System**: Combines collaborative filtering (BiasedSVD) with content-based filtering
+- **Cold Start Handling**: Uses product metadata for new users/items
+- **Real-time Processing**: Streaming data integration with batch processing
+- **Comprehensive Evaluation**: Proper train/test split with realistic metrics (RMSE ~0.52, Precision@5 ~0.11)
+- **MLflow Integration**: Complete experiment tracking and model versioning
+- **Organized Architecture**: Semantic folder structure for maintainability
+
 ---
 
 ## Setup Instructions
@@ -74,20 +82,28 @@ mlflow
 RecoMart_recommendation_pipeline/
 ├── recomart_env/                    # Virtual environment
 ├── src/                            # Source code directory
-│   ├── utils/                      # Utility scripts
-│   │   ├── generate_source_data.py # Data generation utility
-│   │   └── check_speed_layer_data.py # Speed layer verification
-│   ├── 04_validate_data.py         # Step 4: Data validation
-│   ├── 05_prepare_and_eda.py       # Step 5: Data preparation & EDA
-│   ├── 06_feature_engineering.py   # Step 6: Feature engineering
-│   ├── 07_feature_store.py         # Step 7: Feature store management
-│   ├── 08_data_lineage.py          # Step 8: Data lineage tracking
-│   ├── 09_train_and_evaluate_model.py           # Step 9: Model training
-│   ├── 10_orchestrate_pipeline.py  # Pipeline orchestration
-│   ├── ingest_master.py            # Step 2: Data ingestion
-│   ├── merge_streaming_data.py     # Lambda Architecture: Merge streaming + batch data
-│   ├── speed_layer.py              # Step 2: Real-time processing
-│   └── stream_simulator.py         # Step 2: Stream simulation
+│   ├── ingestion/                  # Data ingestion scripts
+│   │   ├── ingest_master.py        # Batch & API data ingestion
+│   │   ├── mock_api.py             # Product metadata API
+│   │   ├── speed_layer.py          # Real-time data processing
+│   │   └── stream_simulator.py     # Stream event simulation
+│   ├── processing/                 # Data processing scripts
+│   │   ├── 04_validate_data.py     # Data validation & quality
+│   │   ├── 05_prepare_and_eda.py   # Data preparation & EDA
+│   │   ├── 06_feature_engineering.py # Feature engineering
+│   │   ├── 07_feature_store.py     # Feature store management
+│   │   ├── 08_data_lineage.py      # Data lineage tracking
+│   │   └── merge_streaming_data.py # Lambda architecture merge
+│   ├── modeling/                   # Machine learning scripts
+│   │   ├── 09_train_and_evaluate_model.py # BiasedSVD training
+│   │   ├── generate_recommendations.py    # Hybrid recommendations
+│   │   └── load_best_model.py      # Load specific MLflow models
+│   ├── orchestration/              # Pipeline orchestration
+│   │   └── 10_orchestrate_pipeline.py # Complete pipeline runner
+│   └── utils/                      # Utility scripts
+│       ├── generate_source_data.py # Data generation utility
+│       ├── check_speed_layer_data.py # Speed layer verification
+│       └── inspect_feature_store.py # Feature store inspection
 ├── recomart_lake/                  # Data lake (auto-generated)
 │   ├── logs/                       # Audit logs
 │   ├── raw/                        # Raw data storage
@@ -99,117 +115,10 @@ RecoMart_recommendation_pipeline/
 │   ├── metadata/                   # Data lineage metadata
 │   └── speed_layer/                # Real-time data store
 ├── source_data/                    # Source data files
+├── mlflow.db                       # MLflow tracking database
 ├── requirements.txt                # Python dependencies
-└── README.md                       # This file
-```
-
----
-
-## Pipeline Steps
-
-### Step 1: Data Generation (Optional)
-Generate synthetic data for testing:
-```bash
-cd src/utils
-python generate_source_data.py
-```
-
-### Step 2: Data Ingestion & Real-time Processing
-This step includes three components that work together:
-
-#### 2a. Stream Simulator (`stream_simulator.py`)
-- Generates real-time clickstream events
-- Simulates user interactions (views, clicks, add-to-cart)
-- Outputs JSON events every 1.5 seconds
-
-#### 2b. Speed Layer (`speed_layer.py`)
-- Processes real-time events from stream simulator
-- Stores events in SQLite database
-- Handles real-time data ingestion
-
-#### 2c. Batch Ingestion (`ingest_master.py`)
-- Ingests transactional CSV data
-- Fetches product metadata from API
-- Stores data in partitioned data lake structure
-
-**Manual Execution:**
-```bash
-# Terminal 1: Start real-time processing
-cd src
-python stream_simulator.py | python speed_layer.py
-
-# Terminal 2: Run batch ingestion
-python ingest_master.py
-```
-
-### Step 3: Mock API (Run separately if needed)
-```bash
-python mock_api.py
-```
-
-### Step 4: Data Validation (`04_validate_data.py`)
-- Validates data against predefined schemas
-- Generates data quality reports in PDF format
-- Identifies missing values, duplicates, and range errors
-
-```bash
-cd src
-python 04_validate_data.py
-```
-
-### Step 5: Data Preparation & EDA (`05_prepare_and_eda.py`)
-- Cleans and prepares data for analysis
-- Handles missing values and outliers
-- Generates exploratory data analysis plots
-
-```bash
-python 05_prepare_and_eda.py
-```
-
-### Step 6: Feature Engineering (`06_feature_engineering.py`)
-- Creates user and item features
-- Calculates aggregated metrics
-- Prepares features for machine learning
-
-```bash
-python 06_feature_engineering.py
-```
-
-### Step 7: Feature Store (`07_feature_store.py`)
-- Stores engineered features in SQLite database
-- Provides versioning and metadata tracking
-- Enables feature retrieval for model training
-
-```bash
-python 07_feature_store.py
-```
-
-### Step 8: Data Lineage Tracking (`08_data_lineage.py`)
-- Tracks data transformations and dependencies
-- Maintains audit trail of data processing
-- Generates lineage metadata
-
-```bash
-python 08_data_lineage.py
-```
-
-### Step 9: Model Training (`09_train_and_evaluate_model.py`)
-- Trains recommendation model using scikit-learn
-- Implements matrix factorization with TruncatedSVD
-- Tracks experiments with MLflow
-- Generates model performance visualizations
-
-```bash
-python 09_train_and_evaluate_model.py
-```
-
-### Step 10: Pipeline Orchestration (`10_orchestrate_pipeline.py`)
-- Orchestrates the entire pipeline execution
-- Manages Speed Layer and Batch Layer coordination
-- Provides comprehensive logging and error handling
-
-```bash
-python 10_orchestrate_pipeline.py
+├── README.md                       # This file
+└── DEMO_SCRIPTS.md                 # Demo and testing scripts
 ```
 
 ---
@@ -219,50 +128,60 @@ python 10_orchestrate_pipeline.py
 ### Automated Execution (Recommended)
 Run the complete pipeline with orchestration:
 ```bash
-cd src
+cd src/orchestration
 python 10_orchestrate_pipeline.py
 ```
 
 This will:
-1. Start the Speed Layer (runs for 2 minutes to generate streaming data)
-2. Execute all batch processing steps in sequence:
+1. **Generate synthetic data** (if needed)
+2. **Start Speed Layer** (runs for 2 minutes to generate streaming data)
+3. **Execute batch processing** in sequence:
    - Data ingestion from CSV and API sources
-   - **Merge streaming data with batch data** (Lambda Architecture integration)
-   - **Data validation on combined dataset** (streaming + batch)
-   - **Data preparation and EDA on combined dataset**
-   - **Feature engineering using combined data sources**
-   - **Feature store with combined data versioning**
-   - **Data lineage tracking with streaming integration metadata**
-   - **Model training with combined streaming + batch data**
-3. Handle errors and provide detailed logging
-4. Clean up processes upon completion
+   - **Merge streaming data with batch data** (Lambda Architecture)
+   - **Data validation** on combined dataset
+   - **Data preparation and EDA** with click aggregation
+   - **Feature engineering** using combined data sources
+   - **Feature store** with versioning
+   - **Data lineage tracking** with streaming integration
+   - **BiasedSVD model training** with proper train/test split
+   - **Hybrid recommendation generation** (CF + Content-based)
+4. **Handle errors** and provide detailed logging
+5. **Clean up processes** upon completion
 
-### Manual Step-by-Step Execution
-If you prefer to run steps individually:
+---
 
-1. **Generate test data:**
-   ```bash
-   cd src/utils
-   python generate_source_data.py
-   ```
+## Model Performance
 
-2. **Start real-time processing:**
-   ```bash
-   cd src
-   python stream_simulator.py | python speed_layer.py
-   ```
+### Achieved Metrics
+- **RMSE**: ~0.52 (excellent prediction accuracy)
+- **Precision@5**: ~0.11 (realistic and good for sparse data)
+- **Recall@5**: Varies based on user behavior
+- **F1-Score@5**: Balanced precision-recall performance
 
-3. **Run batch steps in order:**
-   ```bash
-   python ingest_master.py
-   python merge_streaming_data.py
-   python 04_validate_data.py
-   python 05_prepare_and_eda.py
-   python 06_feature_engineering.py
-   python 07_feature_store.py
-   python 08_data_lineage.py
-   python 09_train_and_evaluate_model.py
-   ```
+### Model Features
+- **BiasedSVD**: Enhanced SVD with user/item bias handling
+- **Hyperparameter Tuning**: Sparsity-aware parameter optimization
+- **Proper Evaluation**: Train/test split prevents data leakage
+- **Hybrid Approach**: 70% collaborative filtering + 30% content-based
+- **Cold Start Handling**: Content-based recommendations for new users
+
+---
+
+## MLflow Integration
+
+### Viewing Results
+```bash
+# From project root directory
+mlflow ui
+```
+
+Access MLflow UI at: `http://localhost:5000`
+
+### What You'll Find
+- **Experiments**: All training runs with metrics and parameters
+- **Models**: Registered BiasedSVD models with versioning
+- **Artifacts**: Model files, plots, and metadata
+- **Metrics Tracking**: RMSE, Precision@K, Recall@K, F1-Score@K
 
 ---
 
@@ -275,7 +194,29 @@ After successful execution, you'll find:
 - **Reports**: Data quality PDF reports in `recomart_lake/reports/`
 - **Visualizations**: EDA plots in `recomart_lake/eda_plots/`
 - **Models**: Trained models and metadata in `recomart_lake/models/`
-- **MLflow Tracking**: Experiment tracking in SQLite database (`mlflow.db`)
+- **MLflow Database**: `mlflow.db` with experiment tracking
+- **Feature Store**: SQLite database with user/item features
+
+---
+
+## Architecture Highlights
+
+### Lambda Architecture
+- **Batch Layer**: Historical transaction processing
+- **Speed Layer**: Real-time clickstream processing
+- **Serving Layer**: Combined data for recommendations
+
+### Recommendation System
+- **Collaborative Filtering**: BiasedSVD with regularization
+- **Content-Based**: Product metadata integration
+- **Hybrid Scoring**: Weighted combination of both approaches
+- **Cold Start**: Popularity-based recommendations for new users
+
+### Data Quality
+- **Validation**: Schema enforcement with Pandera
+- **Monitoring**: Comprehensive logging and error handling
+- **Lineage**: Full data transformation tracking
+- **Evaluation**: Proper train/test methodology
 
 ---
 
@@ -283,42 +224,33 @@ After successful execution, you'll find:
 
 ### Common Issues
 
-1. **Module not found errors**: Ensure virtual environment is activated and requirements are installed
-2. **Path errors**: Run scripts from the correct directory (usually `src/`)
-3. **Port conflicts**: Ensure port 5000 is available for mock API
+1. **Module not found errors**: Ensure virtual environment is activated
+2. **Path errors**: Run scripts from correct directories
+3. **MLflow UI issues**: Run `mlflow ui` from project root
 4. **Unicode errors**: Ensure terminal supports UTF-8 encoding
 
 ### Verification Commands
 
-Check Speed Layer data:
 ```bash
+# Check Speed Layer data
 cd src/utils
 python check_speed_layer_data.py
+
+# Inspect feature store
+python inspect_feature_store.py
+
+# Load specific model
+cd ../modeling
+python load_best_model.py
 ```
-
-View MLflow UI:
-```bash
-mlflow ui --backend-store-uri sqlite:///mlflow.db
-```
-
----
-
-## Architecture Notes
-
-- **Lambda Architecture**: Combines batch and real-time processing with automatic data merging
-- **Data Lake**: Partitioned storage by source, type, and timestamp
-- **Feature Store**: Centralized feature management with combined data versioning
-- **MLflow Integration**: Comprehensive experiment tracking
-- **Data Quality**: Automated validation and reporting on combined datasets
-- **Lineage Tracking**: Full data transformation audit trail with streaming integration metadata
-- **End-to-End Streaming Integration**: All pipeline steps consistently use combined streaming + batch data
 
 ---
 
 ## Next Steps
 
-1. **Deployment**: Containerize with Docker for production deployment
-2. **Scaling**: Implement with Apache Kafka for real-time streaming
-3. **Monitoring**: Add comprehensive monitoring and alerting
-4. **API**: Build REST API for model serving
-5. **CI/CD**: Implement automated testing and deployment pipelines
+1. **Production Deployment**: Containerize with Docker
+2. **Scaling**: Implement Apache Kafka for streaming
+3. **Monitoring**: Add comprehensive alerting
+4. **API Development**: Build REST API for model serving
+5. **CI/CD**: Implement automated testing and deployment
+6. **A/B Testing**: Framework for recommendation experiments

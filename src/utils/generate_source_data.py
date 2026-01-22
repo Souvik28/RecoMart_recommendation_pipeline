@@ -5,22 +5,16 @@ import os
 from datetime import datetime, timedelta
 
 def generate_transactions(n=1200):
-    # Debug: Show current working directory
-    current_dir = os.getcwd()
-    print(f"Current directory: {current_dir}")
+    # Use absolute paths to avoid working directory issues
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    source_dir = os.path.join(project_root, "source_data")
+    file_path = os.path.join(source_dir, "transactions.csv")
     
-    # Determine correct path based on current directory
-    if "src" in current_dir:
-        # Running from src/utils directory
-        source_dir = "../../source_data"
-        file_path = "../../source_data/transactions.csv"
-    else:
-        # Running from project root
-        source_dir = "source_data"
-        file_path = "source_data/transactions.csv"
-    
-    print(f"Creating directory: {os.path.abspath(source_dir)}")
-    print(f"Will save file to: {os.path.abspath(file_path)}")
+    print(f"Script directory: {script_dir}")
+    print(f"Project root: {project_root}")
+    print(f"Creating directory: {source_dir}")
+    print(f"Will save file to: {file_path}")
     
     # Ensure directory exists
     os.makedirs(source_dir, exist_ok=True)
@@ -63,4 +57,4 @@ def generate_transactions(n=1200):
     print(f"Summary: Includes missing values, duplicates, and range errors (ratings > 5).")
 
 if __name__ == "__main__":
-    generate_transactions(50000)
+    generate_transactions(10000)
